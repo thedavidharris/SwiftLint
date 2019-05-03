@@ -57,7 +57,7 @@ extension Configuration {
 
     private func groupFiles(_ files: [File],
                             visitor: LintableFilesVisitor) -> Result<[Configuration: [File]], CommandantError<()>> {
-        if files.isEmpty {
+        if files.isEmpty && !visitor.allowZeroLintableFiles {
             let errorMessage = "No lintable files found at paths: '\(visitor.paths.joined(separator: ", "))'"
             return .failure(.usageError(description: errorMessage))
         }

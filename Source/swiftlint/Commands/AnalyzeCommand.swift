@@ -47,19 +47,20 @@ struct AnalyzeOptions: OptionsProtocol {
     let enableAllRules: Bool
     let autocorrect: Bool
     let compilerLogPath: String
+    let allowZeroLintableFiles: Bool
 
     // swiftlint:disable line_length
-    static func create(_ path: String) -> (_ configurationFile: String) -> (_ strict: Bool) -> (_ lenient: Bool) -> (_ forceExclude: Bool) -> (_ useScriptInputFiles: Bool) -> (_ benchmark: Bool) -> (_ reporter: String) -> (_ quiet: Bool) -> (_ enableAllRules: Bool) -> (_ autocorrect: Bool) -> (_ compilerLogPath: String) -> (_ paths: [String]) -> AnalyzeOptions {
-        return { configurationFile in { strict in { lenient in { forceExclude in { useScriptInputFiles in { benchmark in { reporter in { quiet in { enableAllRules in { autocorrect in { compilerLogPath in { paths in
+    static func create(_ path: String) -> (_ configurationFile: String) -> (_ strict: Bool) -> (_ lenient: Bool) -> (_ forceExclude: Bool) -> (_ useScriptInputFiles: Bool) -> (_ benchmark: Bool) -> (_ reporter: String) -> (_ quiet: Bool) -> (_ enableAllRules: Bool) -> (_ autocorrect: Bool) -> (_ compilerLogPath: String) -> (_ allowZeroLintableFiles: Bool) -> (_ paths: [String]) -> AnalyzeOptions {
+        return { configurationFile in { strict in { lenient in { forceExclude in { useScriptInputFiles in { benchmark in { reporter in { quiet in { enableAllRules in { autocorrect in { compilerLogPath in { allowZeroLintableFiles in { paths in
             let allPaths: [String]
             if !path.isEmpty {
                 allPaths = [path]
             } else {
                 allPaths = paths
             }
-            return self.init(paths: allPaths, configurationFile: configurationFile, strict: strict, lenient: lenient, forceExclude: forceExclude, useScriptInputFiles: useScriptInputFiles, benchmark: benchmark, reporter: reporter, quiet: quiet, enableAllRules: enableAllRules, autocorrect: autocorrect, compilerLogPath: compilerLogPath)
+            return self.init(paths: allPaths, configurationFile: configurationFile, strict: strict, lenient: lenient, forceExclude: forceExclude, useScriptInputFiles: useScriptInputFiles, benchmark: benchmark, reporter: reporter, quiet: quiet, enableAllRules: enableAllRules, autocorrect: autocorrect, compilerLogPath: compilerLogPath, allowZeroLintableFiles: allowZeroLintableFiles)
             // swiftlint:enable line_length
-        }}}}}}}}}}}}
+            }}}}}}}}}}}}}
     }
 
     static func evaluate(_ mode: CommandMode) -> Result<AnalyzeOptions, CommandantError<CommandantError<()>>> {
@@ -85,6 +86,9 @@ struct AnalyzeOptions: OptionsProtocol {
                                usage: "correct violations whenever possible")
             <*> mode <| Option(key: "compiler-log-path", defaultValue: "",
                                usage: "the path of the full xcodebuild log to use when linting AnalyzerRules")
+            <*> mode <| Option(key: "allow-zero-lintable-files",
+                               defaultValue: false,
+                               usage: "pass successfully if no files passed are lintable")
             // This should go last to avoid eating other args
             <*> mode <| pathsArgument(action: "analyze")
     }

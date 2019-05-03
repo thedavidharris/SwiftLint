@@ -1,3 +1,26 @@
+## Master
+
+#### Breaking
+
+* None.
+
+#### Experimental
+
+* None.
+
+#### Enhancements
+* Add option to pass successfully if no files passed to SwiftLint are lintable.  
+  [thedavidharris](https://github.com/thedavidharris)
+  [#2608](https://github.com/realm/SwiftLint/issues/2608)i
+
+* None.
+
+#### Bug Fixes
+
+* Don't trigger `redundant_void_return` violations when using `subscript` as the
+  return type is required.  
+  [Marcelo Fabri](https://github.com/marcelofabri)
+
 ## 0.32.0: Wash-N-Fold-N-Reduce
 
 #### Breaking

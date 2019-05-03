@@ -18,11 +18,12 @@ struct LintableFilesVisitor {
     let forceExclude: Bool
     let cache: LinterCache?
     let parallel: Bool
+    let allowZeroLintableFiles: Bool
     let mode: LintOrAnalyzeModeWithCompilerArguments
     let block: (Linter) -> Void
 
     init(paths: [String], action: String, useSTDIN: Bool, quiet: Bool, useScriptInputFiles: Bool, forceExclude: Bool,
-         cache: LinterCache?, parallel: Bool, block: @escaping (Linter) -> Void) {
+         cache: LinterCache?, parallel: Bool, allowZeroLintableFiles: Bool, block: @escaping (Linter) -> Void) {
         self.paths = paths
         self.action = action
         self.useSTDIN = useSTDIN
@@ -32,11 +33,12 @@ struct LintableFilesVisitor {
         self.cache = cache
         self.parallel = parallel
         self.mode = .lint
+        self.allowZeroLintableFiles = allowZeroLintableFiles
         self.block = block
     }
 
     private init(paths: [String], action: String, useSTDIN: Bool, quiet: Bool, useScriptInputFiles: Bool,
-                 forceExclude: Bool, cache: LinterCache?, compilerLogContents: String,
+                 forceExclude: Bool, cache: LinterCache?, allowZeroLintableFiles: Bool, compilerLogContents: String,
                  block: @escaping (Linter) -> Void) {
         self.paths = paths
         self.action = action
@@ -54,6 +56,7 @@ struct LintableFilesVisitor {
             self.mode = .analyze(allCompilerInvocations: allCompilerInvocations)
         }
         self.block = block
+        self.allowZeroLintableFiles = allowZeroLintableFiles
     }
 
     static func create(_ options: LintOrAnalyzeOptions, cache: LinterCache?, block: @escaping (Linter) -> Void)
@@ -74,6 +77,7 @@ struct LintableFilesVisitor {
                                            useSTDIN: options.useSTDIN, quiet: options.quiet,
                                            useScriptInputFiles: options.useScriptInputFiles,
                                            forceExclude: options.forceExclude, cache: cache,
+                                           allowZeroLintableFiles: options.allowZeroLintableFiles,
                                            compilerLogContents: compilerLogContents, block: block)
         return .success(visitor)
     }

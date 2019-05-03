@@ -143,6 +143,7 @@ struct LintOrAnalyzeOptions {
     let enableAllRules: Bool
     let autocorrect: Bool
     let compilerLogPath: String
+    let allowZeroLintableFiles: Bool
 
     init(_ options: LintOptions) {
         mode = .lint
@@ -161,6 +162,7 @@ struct LintOrAnalyzeOptions {
         enableAllRules = options.enableAllRules
         autocorrect = false
         compilerLogPath = ""
+        allowZeroLintableFiles = options.allowZeroLintableFiles
     }
 
     init(_ options: AnalyzeOptions) {
@@ -180,6 +182,7 @@ struct LintOrAnalyzeOptions {
         enableAllRules = options.enableAllRules
         autocorrect = options.autocorrect
         compilerLogPath = options.compilerLogPath
+        allowZeroLintableFiles = options.allowZeroLintableFiles
     }
 
     var verb: String {

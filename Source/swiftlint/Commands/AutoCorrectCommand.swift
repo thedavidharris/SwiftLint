@@ -30,19 +30,20 @@ struct AutoCorrectOptions: OptionsProtocol {
     let format: Bool
     let cachePath: String
     let ignoreCache: Bool
+    let allowZeroLintableFiles: Bool
 
     // swiftlint:disable line_length
-    static func create(_ path: String) -> (_ configurationFile: String) -> (_ useScriptInputFiles: Bool) -> (_ quiet: Bool) -> (_ forceExclude: Bool) -> (_ format: Bool) -> (_ cachePath: String) -> (_ ignoreCache: Bool) -> (_ paths: [String]) -> AutoCorrectOptions {
-        return { configurationFile in { useScriptInputFiles in { quiet in { forceExclude in { format in { cachePath in { ignoreCache in { paths in
+    static func create(_ path: String) -> (_ configurationFile: String) -> (_ useScriptInputFiles: Bool) -> (_ quiet: Bool) -> (_ forceExclude: Bool) -> (_ format: Bool) -> (_ cachePath: String) -> (_ ignoreCache: Bool) -> (_ allowZeroLintableFiles: Bool) -> (_ paths: [String]) -> AutoCorrectOptions {
+        return { configurationFile in { useScriptInputFiles in { quiet in { forceExclude in { format in { cachePath in { ignoreCache in { allowZeroLintableFiles in { paths in
             let allPaths: [String]
             if !path.isEmpty {
                 allPaths = [path]
             } else {
                 allPaths = paths
             }
-            return self.init(paths: allPaths, configurationFile: configurationFile, useScriptInputFiles: useScriptInputFiles, quiet: quiet, forceExclude: forceExclude, format: format, cachePath: cachePath, ignoreCache: ignoreCache)
+            return self.init(paths: allPaths, configurationFile: configurationFile, useScriptInputFiles: useScriptInputFiles, quiet: quiet, forceExclude: forceExclude, format: format, cachePath: cachePath, ignoreCache: ignoreCache, allowZeroLintableFiles: allowZeroLintableFiles)
             // swiftlint:enable line_length
-        }}}}}}}}
+            }}}}}}}}}
     }
 
     static func evaluate(_ mode: CommandMode) -> Result<AutoCorrectOptions, CommandantError<CommandantError<()>>> {
@@ -59,6 +60,9 @@ struct AutoCorrectOptions: OptionsProtocol {
                                usage: "the directory of the cache used when correcting")
             <*> mode <| Option(key: "no-cache", defaultValue: false,
                                usage: "ignore cache when correcting")
+            <*> mode <| Option(key: "allow-zero-lintable-files",
+                               defaultValue: false,
+                               usage: "pass successfully if no files passed are lintable")
             // This should go last to avoid eating other args
             <*> mode <| pathsArgument(action: "correct")
     }
@@ -67,7 +71,7 @@ struct AutoCorrectOptions: OptionsProtocol {
         let cache = ignoreCache ? nil : LinterCache(configuration: configuration)
         return LintableFilesVisitor(paths: paths, action: "Correcting", useSTDIN: false, quiet: quiet,
                                     useScriptInputFiles: useScriptInputFiles, forceExclude: forceExclude, cache: cache,
-                                    parallel: true) { linter in
+                                    parallel: true, allowZeroLintableFiles: allowZeroLintableFiles) { linter in
             if self.format {
                 switch configuration.indentation {
                 case .tabs:
